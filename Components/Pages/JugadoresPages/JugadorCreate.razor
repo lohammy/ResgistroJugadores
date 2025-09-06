@@ -1,0 +1,87 @@
+﻿@page "/Jugador/Create"
+@inject NavigationManager navigationManager
+@inject JugadorService jugadorService
+@rendermode InteractiveServer
+
+@*HTML*@
+<PageTitle>Create</PageTitle>
+<EditForm Model="Jugador" OnValidSubmit="Guardar">
+	<DataAnnotationsValidator />
+
+
+	<div class="container">
+		<div class="card shadow-lg">
+			<div class="card-header text-center">
+				<h5 class="card-title">Crear Jugador</h5>
+			</div>
+
+			<div class="card-body ">
+
+				@*JugadorId*@
+				<div class="col-1">
+					<label class="form-label"><strong>JugadorId</strong></label>
+					<InputNumber class="form-control" readonly @bind-Value="Jugador.JugadorId"></InputNumber>
+				</div>
+
+				@*Nombres*@
+				<div class="mb-3">
+					<label class="form-label"><strong>Nombres</strong></label>
+					<InputText class="form-control" @bind-Value="Jugador.Nombres"></InputText>
+					<ValidationMessage For="(() => Jugador.Nombres)" />
+				</div>
+
+				@*Partidas*@
+				<div class="mb-3">
+					<label class="form-label"><strong>Partidas</strong></label>
+					<InputNumber class="form-control" @bind-Value="Jugador.Partida"></InputNumber>
+					<ValidationMessage For="(() => Jugador.Partida)" />
+				</div>
+			</div>
+
+			@*footer*@
+			<div class="card-footer text-center mt-2">
+				<a href="/Jugador/Index" class="btn btn-secondary"> <span class="bi bi-arrow-left"></span> Volver</a>
+				<button type="submit" class="btn btn-primary bi bi-floppy"> Guardar</button>
+			</div>
+		</div>
+	</div>
+</EditForm>
+@Mensaje
+@code {
+	public Jugadores Jugador { get; set; } = new Jugadores();
+	public string Mensaje { get; set; } = string.Empty;
+	public List<Jugadores> ListaJugador { get; set; } = new List<Jugadores>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		ListaJugador = await jugadorService.Listar(j => j.JugadorId > 0);
+	}
+
+	public async Task Guardar()
+	{
+		var crear = await jugadorService.Guardar(Jugador);
+		if (await Validar())
+		{
+			Mensaje = "Ya existe un jugador con este nombre. ";
+			return;
+		}
+
+		if (crear)
+		{
+			Mensaje = "Creado exitosamente.";
+			navigationManager.NavigateTo("/Jugador/Index");
+		}
+
+		else
+		{
+			Mensaje = "No se ha podido crear el jugador. ";
+		}
+	}
+
+	public async Task<bool> Validar()
+	{
+		var existe = await jugadorService.ExisteJugador(Jugador.JugadorId, Jugador.Nombres);
+		return existe;
+	}
+
+}
