@@ -1,0 +1,104 @@
+﻿@page "/Jugador/Edit/{JugadorId:int}"
+@inject JugadorService jugadorService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@*HTML*@
+<PageTitle>Modificar</PageTitle>
+<EditForm Model="Jugador" OnValidSubmit="Modificar">
+	<DataAnnotationsValidator />
+	<ValidationSummary />
+
+	<div class="container">
+		<div class="card shadow-lg">
+			<div class="card-header text-center">
+				<h5 class="card-title">Modificar Jugador</h5>
+			</div>
+
+			<div class="card-body">
+				@*Nombres*@
+				<div class="mb-3">
+					<label class="form-label"><strong>Nombres</strong></label>
+					<InputText class="form-control" @bind-Value="Jugador.Nombres"></InputText>
+					<ValidationMessage For="(() => Jugador.Nombres)" />
+				</div>
+
+				@*Partidas*@
+				<div class="mb-3">
+					<label class="form-label"><strong>Partidas</strong></label>
+					<InputNumber class="form-control" @bind-Value="Jugador.Partida"></InputNumber>
+					<ValidationMessage For="(() => Jugador.Partida)" />
+				</div>
+			</div>
+
+			@*footer*@
+			<div class="card-footer text-center mt-2">
+				<a href="/Jugador/Index" class="btn btn-secondary">
+					<span class="bi bi-arrow-left"></span> Volver
+				</a>
+				<button type="submit" class="btn btn-primary bi bi-floppy" @onclick="Modificar"> Modificar</button>
+				<button type="button" class="btn btn-danger bi bi-trash" @onclick="Eliminar"> Eliminar</button>
+			</div>
+		</div>
+	</div>
+</EditForm>
+
+
+@code {
+	[Parameter]
+	public int JugadorId { get; set; }
+
+	public Jugadores Jugador { get; set; } = new Jugadores();
+	public string Mensaje { get; set; } = string.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Jugador = await jugadorService.Buscar(JugadorId);
+
+	}
+
+	public async Task Modificar()
+	{
+		if (await Validar())
+		{
+			Mensaje = "Ya existe un jugador con este nombre. ";
+			return;
+		}
+
+		var crear = await jugadorService.Guardar(Jugador);
+
+		if (crear)
+		{
+			Mensaje = "Se ha modificado el jugador correctamente. ";
+			navigationManager.NavigateTo("/Jugador/Index");
+		}
+		else
+		{
+			Mensaje = "No se ha modificado correctamente. ";
+		}
+	}
+	private async Task Eliminar()
+	{
+		var eliminado = await jugadorService.Eliminar(Jugador.JugadorId);
+
+		if (eliminado)
+		{
+			Mensaje = "Se ha eliminado correctamente";
+			navigationManager.NavigateTo("/Jugador/Index");
+		}
+		else
+		{
+			Mensaje = "No se ha podido eliminar correctamente";
+		}
+	}
+	public async Task<bool> Validar()
+	{
+		var existe = await jugadorService.ExisteJugador(Jugador.JugadorId, Jugador.Nombres);
+		return existe;
+	}
+
+	public void Volver()
+	{
+		navigationManager.NavigateTo("/Jugador/Index");
+	}
+}
