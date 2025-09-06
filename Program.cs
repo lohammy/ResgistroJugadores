@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using ResgistroJugadores.Components;
 using ResgistroJugadores.Context;
+using ResgistroJugadores.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +14,7 @@ builder.Services.AddRazorComponents()
 var ConStr = builder.Configuration.GetConnectionString("ConStr");
 
 builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlite(ConStr));
-
-
+builder.Services.AddScoped<JugadorService>();
 
 
 
