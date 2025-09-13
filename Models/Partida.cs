@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ResgistroJugadores.Models;
 
-public class Partidas
+public class Partida
 {
     [Key]
     public int PartidaId { get; set; }
@@ -19,7 +19,7 @@ public class Partidas
     public int TurnoJugadorId { get; set; }
 
     [StringLength(9)]
-    public string EstadoTablero { get; set; }
+    public string EstadoTablero { get; set; } = "-------";
 
     public DateTime FechaInicio { get; set; } = DateTime.UtcNow;
     public DateTime? FechaFin { get; set; }
@@ -36,6 +36,4 @@ public class Partidas
 
     [ForeignKey(nameof(TurnoJugadorId))]
     public virtual Jugadores TurnoJugador { get; set; }
-
-    //public virtual ICollection<Movimientos> Movimientos { get; set; } = new List<Movimientos>();
 }
