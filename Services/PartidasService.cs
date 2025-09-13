@@ -7,16 +7,15 @@ namespace ResgistroJugadores.Services;
 
 public class PartidasService(IDbContextFactory<Contexto> DbFactory)
 {
-    public async Task<bool> Guardar(Partidas partida)
+    public async Task<bool> Registrar(Partida partidas)
     {
-        if (!await Existe(partida.PartidaId))
+
+
+        if (partidas.Jugador1Id != 0 && partidas.Jugador1Id != partidas.Jugador2Id)
         {
-            return await Insertar(partida);
+            return await Insertar(partidas);
         }
-        else
-        {
-            return await Modificar(partida);
-        }
+        return false;
     }
     private async Task<bool> Existe(int partidaId)
     {
@@ -25,21 +24,21 @@ public class PartidasService(IDbContextFactory<Contexto> DbFactory)
             .AnyAsync(t => t.PartidaId == partidaId);
     }
 
-    private async Task<bool> Insertar(Partidas partida)
+    private async Task<bool> Insertar(Partida partida)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
         contexto.Partidas.Add(partida);
         return await contexto.SaveChangesAsync() > 0;
     }
 
-    private async Task<bool> Modificar(Partidas partida)
+    public async Task<bool> Modificar(Partida partida)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
         contexto.Update(partida );
         return await contexto
             .SaveChangesAsync() > 0;
     }
-    public async Task<Partidas?> Buscar(int partidaId)
+    public async Task<Partida?> Buscar(int partidaId)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
         return await contexto.Partidas
@@ -53,13 +52,15 @@ public class PartidasService(IDbContextFactory<Contexto> DbFactory)
             .Where(p => p.PartidaId == partidaId)
             .ExecuteDeleteAsync() > 0;
     }
-    public async Task<List<Partidas>> Listar(Expression<Func<Partidas, bool>> criterio)
+    public async Task<List<Partida>> Listar(Expression<Func<Partida, bool>> criterio)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
         return await contexto.Partidas
+            .Include(p => p.Jugador1)
+            .Include(p => p.Jugador2)
             .Where(criterio)
-            .AsNoTracking()
             .ToListAsync();
+
     }
-   
+
 }
