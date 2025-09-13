@@ -11,14 +11,14 @@ using ResgistroJugadores.Context;
 namespace ResgistroJugadores.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20250911220802_inicial")]
+    [Migration("20250913220626_inicial")]
     partial class inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.8");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
 
             modelBuilder.Entity("ResgistroJugadores.Models.Jugadores", b =>
                 {
@@ -38,7 +38,7 @@ namespace ResgistroJugadores.Migrations
                     b.ToTable("Jugadores");
                 });
 
-            modelBuilder.Entity("ResgistroJugadores.Models.Partidas", b =>
+            modelBuilder.Entity("ResgistroJugadores.Models.Partida", b =>
                 {
                     b.Property<int>("PartidaId")
                         .ValueGeneratedOnAdd()
@@ -85,26 +85,28 @@ namespace ResgistroJugadores.Migrations
                     b.ToTable("Partidas");
                 });
 
-            modelBuilder.Entity("ResgistroJugadores.Models.Partidas", b =>
+            modelBuilder.Entity("ResgistroJugadores.Models.Partida", b =>
                 {
                     b.HasOne("ResgistroJugadores.Models.Jugadores", "Ganador")
                         .WithMany()
-                        .HasForeignKey("GanadorId");
+                        .HasForeignKey("GanadorId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("ResgistroJugadores.Models.Jugadores", "Jugador1")
                         .WithMany()
                         .HasForeignKey("Jugador1Id")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("ResgistroJugadores.Models.Jugadores", "Jugador2")
                         .WithMany()
-                        .HasForeignKey("Jugador2Id");
+                        .HasForeignKey("Jugador2Id")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("ResgistroJugadores.Models.Jugadores", "TurnoJugador")
                         .WithMany()
                         .HasForeignKey("TurnoJugadorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Ganador");

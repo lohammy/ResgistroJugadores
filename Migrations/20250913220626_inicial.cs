@@ -52,8 +52,7 @@ namespace ResgistroJugadores.Migrations
                         name: "FK_Partidas_Jugadores_Jugador1Id",
                         column: x => x.Jugador1Id,
                         principalTable: "Jugadores",
-                        principalColumn: "JugadorId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "JugadorId");
                     table.ForeignKey(
                         name: "FK_Partidas_Jugadores_Jugador2Id",
                         column: x => x.Jugador2Id,
@@ -63,8 +62,7 @@ namespace ResgistroJugadores.Migrations
                         name: "FK_Partidas_Jugadores_TurnoJugadorId",
                         column: x => x.TurnoJugadorId,
                         principalTable: "Jugadores",
-                        principalColumn: "JugadorId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "JugadorId");
                 });
 
             migrationBuilder.CreateIndex(
