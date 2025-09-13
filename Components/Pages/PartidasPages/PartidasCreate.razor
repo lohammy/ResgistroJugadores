@@ -1,0 +1,145 @@
+﻿@page "/Partida/Create"
+
+@inject PartidasService partidasService
+@inject JugadorService jugadorService
+@inject NavigationManager navigationManager
+
+@rendermode InteractiveServer
+
+<PageTitle>Crear Partida</PageTitle>
+<EditForm Model="Partidas" OnValidSubmit="Guardar">
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger mt-3" role="alert">
+            @errorMessage
+        </div>
+    }
+    <DataAnnotationsValidator/>
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title"> Crear Partida</h5>
+
+            </div>
+            <div class="card-body">
+
+                <div class="mb-3">
+                    @*JUGADOR 1*@
+                    <label class="form-label"><strong>Jugador 1</strong></label>
+                    <InputSelect class="form-control form-select" @bind-Value="Partidas.Jugador1Id">
+                        <option>Elija una opci&oacute;n</option>
+                        @foreach(var jugador in ListaJugadores){
+                            <option value="@jugador.JugadorId">@jugador.Nombres</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="(()=>Partidas.Jugador1Id)"/>
+                </div>
+                @*Jugador 2*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Juagdor 2</strong></label>
+                    <InputSelect class="form-control form-select" @bind-Value="Partidas.Jugador2Id">
+                        <option>Eliga una opci&oacute;</option>
+                        @foreach(var jugador2 in ListaJugadores){
+                            <option value="@jugador2.JugadorId">@jugador2.Nombres</option>
+                        }
+
+                    </InputSelect>
+                </div>
+                @*Estado de la Partida*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Estado de la partida</strong></label>
+                    <InputSelect class="form-control form-select" @bind-Value="Partidas.EstadoPartida">
+                        <option> Eliga una opci&oacute;n</option>
+                        <option>Solicitada</option>
+                        <option>En Proceso</option>
+                        <option>Completada</option>
+                    </InputSelect>
+                    <ValidationMessage For="(()=>Partidas.EstadoPartida)"/>
+                </div>
+            </div>
+            @*Ganador Id*@
+            <div class="mb-3">
+                <label class="form-label"><strong>GanadorId</strong> </label>
+                <InputSelect class="form-control form-select" @bind-Value=Partidas.GanadorId disable="@(Partidas.EstadoPartida!="Completada")">
+                    <option value="">Elija una opci&oacute;n</option>
+                    @if (Partidas.Jugador1Id != 0)
+                    {
+                        <option value="@Partidas.Jugador1Id">@ListaJugadores.FirstOrDefault(j=>j.JugadorId==Partidas.Jugador1Id)?.Nombres</option>
+                    }
+                    @if(Partidas.Jugador2Id !=0){
+                        <option value="@Partidas.Jugador2Id">@ListaJugadores.FirstOrDefault(j=>j.JugadorId==Partidas.Jugador2Id)?.Nombres</option>
+                    }
+
+                </InputSelect>
+                @*Turno Jugador Id*@
+                <div class="mb-3">
+                    <label class="form-check label"><strong>Turno Jugador Id</strong></label>
+                    <InputSelect class="form-control form-select" @bind-Value=Partidas.TurnoJugadorId>
+                        <option value="@Partidas.Jugador1Id">@ListaJugadores.FirstOrDefault(j=>j.JugadorId==Partidas.Jugador1Id)?.Nombres</option>
+                        <option value="@Partidas.Jugador2Id">@ListaJugadores.FirstOrDefault(j=>j.JugadorId==Partidas.Jugador2Id)?.Nombres</option>
+                    </InputSelect>
+                </div>
+                @*Fecha Inicio*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Fecha Inicio</strong></label>
+                    <InputDate class="form-control" @bind-Value="Partidas.FechaInicio"></InputDate>
+                </div>
+
+                @*FechaFin*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Fecha Fin</strong></label>
+                    <InputDate class="form-control" @bind-Value="Partidas.FechaFin"></InputDate>
+                </div>
+            </div>
+
+
+            <div class="card-footer text-end">
+
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public Partida Partidas { get; set; } = new Partida();
+    public List<Jugadores> ListaJugadores{ get; set; } = new List<Jugadores>();
+    public string errorMessage { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaJugadores = await jugadorService.Listar(j => true);
+
+    }
+
+    //guardar
+
+    public async Task Guardar()
+    {
+        if (Partidas.Jugador1Id == Partidas.Jugador2Id)
+        {
+            errorMessage = "Jugador 1 no puede ser el mismo que Jugador 2";
+            return;
+        }
+        if(Partidas.EstadoPartida != "Completada")
+        {
+            Partidas.GanadorId = null;
+        }
+
+
+        var creado = await partidasService.Registrar(Partidas);
+
+        if (creado)
+        {
+            
+            navigationManager.NavigateTo("/Partida/Index");
+
+        }
+        else
+        {
+            errorMessage=("No se pudo Guardar Correctamente");
+        }
+    }
+
+}
