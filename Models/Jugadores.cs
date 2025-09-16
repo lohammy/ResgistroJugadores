@@ -15,7 +15,10 @@ public class Jugadores
 
     [Range(1, int.MaxValue, ErrorMessage = "las partidas jugadas no pueden ser menor a 1")]
 
-    public int Partida { get; set; }
+    public int Victorias { get; set; }
 
+    public int Empates { get; set; }
+
+    public int Derrotas { get; set; }
 
 }
