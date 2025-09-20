@@ -1,7 +1,112 @@
 ﻿@page "/"
+@inject PartidasService partidasServices
+@inject JugadorService jugadoresServices
+@inject NavigationManager navigationManager
+@using ResgistroJugadores.Services
 
-<PageTitle>Home</PageTitle>
+@rendermode InteractiveServer
 
-<h3>Lohammy Vasquez (2023-0744)</h3>
+<div class="container mx-auto max-w-lg p-10 bg-white rounded-lg shadow-xl text-center" style="background-color: white !important;">
 
-Tarea #1: Registro de jugadores.
+    <div class="card-header">
+        <div class="card-shadow-lg">
+            <h1 class="text-3xl font-bold mb-8 ">Seleccionar Jugadores</h1>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger mt-3" role="alert">
+                    @errorMessage
+                </div>
+            }
+        </div>
+
+        <div class="card-body mt-8 mb-12">
+            <div class="d-flex justify-content-around gap-4">
+
+                @* SELECCION DEL JUGADOR X *@
+                <div>
+                    <label class="font-semibold text-xl text-danger">Jugador X</label>
+                    <InputSelect class="form-select mt-2 bg-red"
+                                 @bind-Value="partida.Jugador1Id">
+                        <option value="0" selected disabled>Seleccione un jugador</option>
+                        @foreach (var jugador in ListaJugadores)
+                        {
+                            <option value="@jugador.JugadorId"
+                                    disabled="@(jugador.JugadorId == partida.Jugador2Id)">
+                                @jugador.Nombres
+                            </option>
+                        }
+                    </InputSelect>
+                </div>
+
+                @* SELECCION DEL JUGADOR O*@
+                <div>
+                    <label class="form-label text-xl text-primary">Jugador O</label>
+                    <InputSelect class="form-select mt-2 border-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                 @bind-Value="partida.Jugador2Id">
+                        <option value="0" selected disabled>Seleccione un jugador</option>
+                        @foreach (var jugador in ListaJugadores)
+                        {
+                            <option value="@jugador.JugadorId"
+                                    disabled="@(jugador.JugadorId == partida.Jugador1Id)">
+                                @jugador.Nombres
+                            </option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            @*boton de iniciar Partida*@
+            <button class="btn btn-success btn-lg mt-4"
+                    @onclick="IniciarPartida">
+                Iniciar Partida
+            </button>
+
+
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Jugadores> ListaJugadores = new List<Jugadores>();
+    private Partida partida = new Partida();
+    private string errorMessage = string.Empty;
+
+    private bool ValidoSeleccion => partida.Jugador1Id > 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            ListaJugadores = await jugadoresServices.Listar(j => j.JugadorId > 0);
+            Console.WriteLine($"Se cargaron {ListaJugadores.Count} jugadores.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar los jugadores: {ex.Message}");
+        }
+    }
+
+    private async Task IniciarPartida()
+    {
+        if (!ValidoSeleccion)
+        {
+            errorMessage = "Debe seleccionar Jugador X";
+            return;
+        }
+
+        else if (ValidoSeleccion)
+        {
+            partida.FechaInicio = DateTime.Now;
+            partida.EstadoPartida = "En Progreso";
+            partida.EstadoTablero = "---------";
+            partida.TurnoJugadorId = partida.Jugador1Id;
+
+            await partidasServices.Registrar(partida);
+
+            navigationManager.NavigateTo($"/JuegoTablero/{partida.PartidaId}");
+        }
+    }
+}
