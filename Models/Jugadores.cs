@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ResgistroJugadores.Models;
 
@@ -20,5 +21,8 @@ public class Jugadores
     public int Empates { get; set; }
 
     public int Derrotas { get; set; }
+
+    [InverseProperty(nameof(Models.Movimientos.Jugadores))]
+    public virtual ICollection<Movimientos> Movimientos { get; set; }
 
 }
