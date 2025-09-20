@@ -11,8 +11,8 @@ using ResgistroJugadores.Context;
 namespace ResgistroJugadores.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20250913220626_inicial")]
-    partial class inicial
+    [Migration("20250920211353_Inicial")]
+    partial class Inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,16 +26,52 @@ namespace ResgistroJugadores.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Derrotas")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Empates")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Nombres")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Partida")
+                    b.Property<int>("Victorias")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("JugadorId");
 
                     b.ToTable("Jugadores");
+                });
+
+            modelBuilder.Entity("ResgistroJugadores.Models.Movimientos", b =>
+                {
+                    b.Property<int>("MovimientoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("FechaMovimiento")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("JugadorId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PartidaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PosicionColumna")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PosicionFila")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("MovimientoId");
+
+                    b.HasIndex("JugadorId");
+
+                    b.HasIndex("PartidaId");
+
+                    b.ToTable("Movimientos");
                 });
 
             modelBuilder.Entity("ResgistroJugadores.Models.Partida", b =>
@@ -85,6 +121,25 @@ namespace ResgistroJugadores.Migrations
                     b.ToTable("Partidas");
                 });
 
+            modelBuilder.Entity("ResgistroJugadores.Models.Movimientos", b =>
+                {
+                    b.HasOne("ResgistroJugadores.Models.Jugadores", "Jugadores")
+                        .WithMany("Movimientos")
+                        .HasForeignKey("JugadorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ResgistroJugadores.Models.Partida", "Partidas")
+                        .WithMany()
+                        .HasForeignKey("PartidaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Jugadores");
+
+                    b.Navigation("Partidas");
+                });
+
             modelBuilder.Entity("ResgistroJugadores.Models.Partida", b =>
                 {
                     b.HasOne("ResgistroJugadores.Models.Jugadores", "Ganador")
@@ -116,6 +171,11 @@ namespace ResgistroJugadores.Migrations
                     b.Navigation("Jugador2");
 
                     b.Navigation("TurnoJugador");
+                });
+
+            modelBuilder.Entity("ResgistroJugadores.Models.Jugadores", b =>
+                {
+                    b.Navigation("Movimientos");
                 });
 #pragma warning restore 612, 618
         }

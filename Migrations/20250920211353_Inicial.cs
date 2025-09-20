@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ResgistroJugadores.Migrations
 {
     /// <inheritdoc />
-    public partial class inicial : Migration
+    public partial class Inicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,7 +18,9 @@ namespace ResgistroJugadores.Migrations
                     JugadorId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Nombres = table.Column<string>(type: "TEXT", nullable: false),
-                    Partida = table.Column<int>(type: "INTEGER", nullable: false)
+                    Victorias = table.Column<int>(type: "INTEGER", nullable: false),
+                    Empates = table.Column<int>(type: "INTEGER", nullable: false),
+                    Derrotas = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -65,6 +67,45 @@ namespace ResgistroJugadores.Migrations
                         principalColumn: "JugadorId");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Movimientos",
+                columns: table => new
+                {
+                    MovimientoId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    PartidaId = table.Column<int>(type: "INTEGER", nullable: false),
+                    JugadorId = table.Column<int>(type: "INTEGER", nullable: false),
+                    PosicionFila = table.Column<int>(type: "INTEGER", nullable: false),
+                    PosicionColumna = table.Column<int>(type: "INTEGER", nullable: false),
+                    FechaMovimiento = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Movimientos", x => x.MovimientoId);
+                    table.ForeignKey(
+                        name: "FK_Movimientos_Jugadores_JugadorId",
+                        column: x => x.JugadorId,
+                        principalTable: "Jugadores",
+                        principalColumn: "JugadorId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Movimientos_Partidas_PartidaId",
+                        column: x => x.PartidaId,
+                        principalTable: "Partidas",
+                        principalColumn: "PartidaId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Movimientos_JugadorId",
+                table: "Movimientos",
+                column: "JugadorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Movimientos_PartidaId",
+                table: "Movimientos",
+                column: "PartidaId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Partidas_GanadorId",
                 table: "Partidas",
@@ -89,6 +130,9 @@ namespace ResgistroJugadores.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Movimientos");
+
             migrationBuilder.DropTable(
                 name: "Partidas");
 
