@@ -13,7 +13,7 @@ a, .btn-link {
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 .content {
@@ -57,4 +57,63 @@ h1:focus {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
+}
+
+.game-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    font-family: sans-serif;
+    padding-top: 2rem;
+}
+
+.selection-screen h1,
+.game-screen h2 {
+    margin-bottom: 1.5rem;
+}
+
+.player-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.game-board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 8px;
+    margin-top: 1rem;
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    background-color: #f0f0f0;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 3rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+    .cell:hover:not(:disabled) {
+        background-color: #e0e0e0;
+    }
+
+    .cell:disabled {
+        cursor: not-allowed;
+    }
+
+.player-x {
+    color: #E91E63;
+}
+
+.player-o {
+    color: #2196F3;
 }
