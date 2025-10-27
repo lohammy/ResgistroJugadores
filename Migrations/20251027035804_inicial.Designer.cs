@@ -11,8 +11,8 @@ using ResgistroJugadores.Context;
 namespace ResgistroJugadores.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20250920211353_Inicial")]
-    partial class Inicial
+    [Migration("20251027035804_inicial")]
+    partial class inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
