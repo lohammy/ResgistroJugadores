@@ -58,7 +58,10 @@ public class PartidasService(IDbContextFactory<Contexto> DbFactory)
         return await contexto.Partidas
             .Include(p => p.Jugador1)
             .Include(p => p.Jugador2)
+            .Include(p => p.Ganador)
+            .Include(p => p.TurnoJugador)
             .Where(criterio)
+            .AsNoTracking()
             .ToListAsync();
 
     }
